@@ -1,0 +1,15 @@
+README.md
+LICENSE
+install.sh
+.git
+.github
+
+# macOS以外ではdarwinディレクトリを無視
+{{ if ne .chezmoi.os "darwin" }}
+darwin/**
+{{ end }}
+
+{{- if env "REMOTE_CONTAINERS" }}
+.git/*
+.ssh/*
+{{- end }}

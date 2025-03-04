@@ -1,0 +1,14 @@
+#!/bin/bash
+
+{{- if eq .chezmoi.os "linux" }}
+sudo apt install -y zsh
+
+# powerlevel10kのフォントをインストール
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Meslo.zip -O /tmp/Meslo.zip
+unzip /tmp/Meslo.zip -d /tmp/Meslo
+mkdir -p ~/.local/share/fonts
+cp /tmp/Meslo/*.ttf ~/.local/share/fonts/truetype/
+rm /tmp/Meslo.zip
+fc-cache -fv
+fc-list | grep "MesloLGS NF"
+{{- end }}

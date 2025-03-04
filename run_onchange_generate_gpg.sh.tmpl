@@ -1,0 +1,73 @@
+#!/bin/bash
+
+{{- $data := include "data.toml" | fromToml -}}
+{{- with $data.data }}
+# 既にGPGキーが存在するか確認
+if gpg --list-secret-keys {{ .personal_email }} &> /dev/null && gpg --list-secret-keys {{ .business_email }} &> /dev/null; then
+    echo "GPG keys for both personal and business emails already exist. Exiting."
+    exit 0
+fi
+
+# 個人用GPGキーの生成
+if ! gpg --list-secret-keys {{ .personal_email }} &> /dev/null; then
+    echo "Generating personal GPG key..."
+    cat > /tmp/personal_gpg_gen << EOF
+%echo Generating personal GPG key
+Key-Type: EDDSA
+Key-Curve: ed25519
+Key-Usage: sign
+Subkey-Type: ECDH
+Subkey-Curve: cv25519
+Subkey-Usage: encrypt
+Name-Real: {{ .personal_name }}
+Name-Email: {{ .personal_email }}
+Expire-Date: 730
+%commit
+%echo Done
+EOF
+    gpg --batch --generate-key /tmp/personal_gpg_gen
+    rm /tmp/personal_gpg_gen
+fi
+
+# 仕事用GPGキーの生成
+if ! gpg --list-secret-keys {{ .business_email }} &> /dev/null; then
+    echo "Generating business GPG key..."
+    cat > /tmp/business_gpg_gen << EOF
+%echo Generating business GPG key
+Key-Type: EDDSA
+Key-Curve: ed25519
+Key-Usage: sign
+Subkey-Type: ECDH
+Subkey-Curve: cv25519
+Subkey-Usage: encrypt
+Name-Real: {{ .business_name }}
+Name-Email: {{ .business_email }}
+Expire-Date: 730
+%commit
+%echo Done
+EOF
+    gpg --batch --generate-key /tmp/business_gpg_gen
+    rm /tmp/business_gpg_gen
+fi
+
+# キーIDを取得
+personal_key_id=$(gpg --list-secret-keys --keyid-format LONG {{ .personal_email }} | grep sec | cut -d'/' -f2 | cut -d' ' -f1)
+business_key_id=$(gpg --list-secret-keys --keyid-format LONG {{ .business_email }} | grep sec | cut -d'/' -f2 | cut -d' ' -f1)
+
+# GitHubに登録するための公開鍵をエクスポート
+echo "Personal GPG public key for GitHub:"
+gpg --armor --export {{ .personal_email }}
+
+echo "Business GPG public key for GitHub:"
+gpg --armor --export {{ .business_email }}
+
+# キーIDを表示
+echo "Personal GPG Key ID: $personal_key_id"
+echo "Business GPG Key ID: $business_key_id"
+
+# Git設定の更新
+if [ -n "$business_key_id" ]; then
+    git config --global user.signingkey $business_key_id
+    git config --global commit.gpgsign true
+fi
+{{- end }}

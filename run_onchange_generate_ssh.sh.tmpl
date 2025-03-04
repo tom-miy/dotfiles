@@ -1,0 +1,88 @@
+#!/bin/bash
+{{- $data := include "data.toml" | fromToml -}}
+{{- with $data.data }}
+# dryrunフラグの確認
+if [ "${CHEZMOI_DRY_RUN:-}" = "true" ]; then
+    echo "Dry run mode: No changes will be made"
+fi
+
+# SSHディレクトリの作成
+SSH_DIR="$HOME/.ssh"
+if [ "${CHEZMOI_DRY_RUN:-}" = "true" ]; then
+    echo "Would create directory: $SSH_DIR"
+else
+    mkdir -p "$SSH_DIR"
+fi
+
+# 個人用SSHキーの生成
+personal_ssh_key="$SSH_DIR/github_personal_ed25519"
+if [ ! -f "$personal_ssh_key" ]; then
+    echo "Would generate personal SSH key: $personal_ssh_key"
+    if [ "${CHEZMOI_DRY_RUN:-}" != "true" ]; then
+        echo "Generating personal SSH key..."
+        ssh-keygen -t ed25519 -C "{{ .personal_email }}" -f "$personal_ssh_key" -N ""
+        
+        # SSH設定ファイルの更新
+        if [ ! -f "$SSH_DIR/config" ]; then
+            touch "$SSH_DIR/config"
+        fi
+        
+        if ! grep -q "Host personal-github.com" "$SSH_DIR/config"; then
+            cat >> "$SSH_DIR/config" << EOF
+Include ~/.ssh/personal_config
+EOF
+        fi
+        
+        # 公開鍵の表示
+        echo "Personal SSH public key for GitHub:"
+        cat "${personal_ssh_key}.pub"
+        echo "Please add this key to your GitHub account (https://github.com/settings/keys)"
+    fi
+fi
+
+# 仕事用SSHキーの生成
+business_ssh_key="$SSH_DIR/github_business_ed25519"
+if [ ! -f "$business_ssh_key" ]; then
+    echo "Generating business SSH key..."
+    ssh-keygen -t ed25519 -C "{{ .business_email }}" -f "$business_ssh_key" -N ""
+    
+    # SSH設定ファイルの更新
+    if ! grep -q "Host business.github.com" "$SSH_DIR/config"; then
+        cat >> "$SSH_DIR/config" << EOF
+
+Include ~/.ssh/business_config
+EOF
+    fi
+    
+    # 公開鍵の表示
+    echo "Business SSH public key for GitHub:"
+    cat "${business_ssh_key}.pub"
+    echo "Please add this key to your GitHub account (https://github.com/settings/keys)"
+fi
+
+# 権限の設定
+chmod 700 "$SSH_DIR"
+chmod 600 "$SSH_DIR/config"
+chmod 600 "$personal_ssh_key" "${personal_ssh_key}.pub"
+chmod 600 "$business_ssh_key" "${business_ssh_key}.pub"
+
+# SSHエージェントへの追加
+eval "$(ssh-agent -s)"
+ssh-add "$personal_ssh_key"
+ssh-add "$business_ssh_key"
+
+# 使用方法の表示
+echo "
+SSH keys have been generated. After adding the public keys to GitHub:
+
+For personal repositories, use:
+git clone git@personal-github.com:username/repo.git
+
+For business repositories, use:
+git clone git@business.github.com:username/repo.git
+
+To test the connection after adding keys to GitHub, run:
+ssh -T git@personal-github.com
+ssh -T git@business.github.com
+" 
+{{- end }}

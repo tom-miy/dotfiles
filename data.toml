@@ -1,0 +1,8 @@
+[data]
+personal_name = "Tom Miy"
+personal_email = "sample@example.com"
+personal_githubUser = "tom-miy"
+
+business_name = "Tom Miy Business"
+business_email = "business@example.com"
+business_githubUser = "tom-miy-business" 

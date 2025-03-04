@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Cursorのインストール
+if ! command -v cursor &> /dev/null; then
+    echo "Installing Cursor..."
+    
+    if [ "{{ .chezmoi.os }}" = "darwin" ]; then
+        # macOS
+        brew install --cask cursor
+    elif [ "{{ .chezmoi.os }}" = "linux" ]; then
+        # Ubuntu/Debian
+        if command -v apt &> /dev/null; then
+            # Cursorのリポジトリを追加
+            curl -fsSL https://download.cursor.sh/apt/gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/cursor-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cursor-archive-keyring.gpg] https://download.cursor.sh/linux/debian stable main" | sudo tee /etc/apt/sources.list.d/cursor.list
+
+            # パッケージリストの更新とインストール
+            sudo apt update
+            sudo apt install -y cursor
+        fi
+    fi
+fi 

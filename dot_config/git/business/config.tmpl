@@ -1,0 +1,22 @@
+{{- $data := include "data.toml" | fromToml -}}
+{{- with $data.data }}
+[url "business-github.com:{{ .business_githubUser }}"]
+    insteadOf = ssh://git@github.com/{{ .business_githubUser }}
+    insteadOf = git@github.com/{{ .business_githubUser }}
+    insteadOf = <https://github.com/{{ .business_githubUser }}>
+    pushInsteadOf = ssh://git@github.com/{{ .business_githubUser }}
+    pushInsteadOf = git@github.com:{{ .business_githubUser }}
+    pushInsteadOf = <https://github.com/{{ .business_githubUser }}>
+
+[includeIf "hasconfig:remote.*.url:ssh://git@github.com/{{ .business_githubUser }}/**"]
+    path = ~/.config/git/business/ifconfig
+
+[includeIf "hasconfig:remote.*.url:git@github.com:{{ .business_githubUser }}/**"]
+    path = ~/.config/git/business/ifconfig
+
+[includeIf "hasconfig:remote.*.url:<https://github.com/{{ .business_githubUser }}/**>"]
+    path = ~/.config/git/business/ifconfig
+
+[ghq]
+    root = ~/ghq/business
+{{- end }}

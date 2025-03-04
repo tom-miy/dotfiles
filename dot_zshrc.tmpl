@@ -1,0 +1,142 @@
+autoload -Uz compinit
+compinit
+
+{{- if eq .chezmoi.os "linux" }}
+# Ubuntu specific settings
+export PATH="$HOME/.local/bin:$PATH"
+
+{{- end }}
+
+# Load Sheldon plugins
+eval "$(sheldon source)"
+
+# Enable Powerlevel10k instant prompt
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+autoload -Uz compinit
+compinit
+zstyle ':completion:*:default' menu select=2
+# LS_COLORSを設定しておく
+export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+ 
+# ファイル補完候補に色を付ける
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# Common abbreviations
+abbr 'll'='ls -la'
+abbr 'g'='git'
+
+{{- if env "REMOTE_CONTAINERS" }}
+# DevContainer specific settings
+export SHELL=/usr/bin/zsh
+export EDITOR=code
+export VISUAL=code
+
+# DevContainer specific abbreviations
+abbr 'dc'='docker-compose'
+abbr 'k'='kubectl'
+{{- end }}
+
+{{- if env "WSL_DISTRO_NAME" }}
+# WSL specific settings
+export BROWSER="wslview"
+export DISPLAY=:0
+export LIBGL_ALWAYS_INDIRECT=1
+
+# WSL specific abbreviations
+abbr 'explorer'='explorer.exe'
+abbr 'code'='code-insiders'
+abbr 'open'='wslview'
+abbr 'pbcopy'='clip.exe'
+abbr 'pbpaste'='powershell.exe -command "Get-Clipboard" | tr -d "\r"'
+
+# WSL specific functions
+winpath() {
+    wslpath -w "$1"
+}
+
+# WSL Docker integration (if using Docker Desktop for Windows)
+export DOCKER_HOST="tcp://localhost:2375"
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+# macOS specific settings
+if [[ $(uname -m) == 'arm64' ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# macOS specific abbreviations
+abbr 'showfiles'='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
+abbr 'hidefiles'='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
+abbr 'cleanup'='find . -type f -name "*.DS_Store" -ls -delete'
+{{- end }}
+
+{{- if eq .chezmoi.os "linux" }}
+
+# Ubuntu specific abbreviations
+abbr 'update'='sudo apt update && sudo apt upgrade -y'
+abbr 'install'='sudo apt install -y'
+abbr 'remove'='sudo apt remove'
+abbr 'clean'='sudo apt autoremove && sudo apt autoclean'
+
+{{- end }}
+
+# Common settings
+export EDITOR="cursor"
+export VISUAL="cursor"
+
+bindkey '^ ' autosuggest-accept
+
+# Load p10k config
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# abbr global settings
+# グローバル設定を追加する場合は、プラグインロード後に設定してください
+abbr_global_flags=(
+    '--global'      # グローバルな略語を作成
+    '--quiet'       # 出力を抑制
+    '--space'       # スペースを自動追加
+)
+
+# abbr initialization
+if ! type abbr &>/dev/null; then
+    echo "zsh-abbr plugin not found. Some features may not work."
+fi
+ abbr git m='commit -m "%"'
+
+# Show current dotfiles profile
+abbr 'dots-current'='echo "Current profile: $CHEZMOI_USAGE"'
+
+# ghq + fzf
+function ghq-fzf() {
+  local src=$(ghq list | fzf --preview "ls -laTh $(ghq root)/{}")
+  if [ -n "$src" ]; then
+    BUFFER="cd $(ghq root)/$src"
+    zle accept-line
+  fi
+  zle -R -c
+}
+zle -N ghq-fzf
+bindkey '^g' ghq-fzf
+
+# mise
+eval "$(mise activate zsh)"
+
+# # Atuin設定
+# eval "$(atuin init zsh)"
+# 
+# # カスタム設定
+# export ATUIN_NOBIND="true"
+# bindkey '^r' _atuin_search_widget
+# 
+# # 同期設定（オプション）
+# # atuin login -u username
+# # atuin sync 
+
+# Go settings
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin" 

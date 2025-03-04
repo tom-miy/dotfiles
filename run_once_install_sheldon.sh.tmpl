@@ -1,0 +1,17 @@
+#!/bin/bash
+
+{{- if ne .chezmoi.os "darwin" }}
+# Sheldonのインストール
+if command -v sheldon &> /dev/null; then
+    echo "Sheldon is already installed."
+else
+    echo "Installing Sheldon manually in the chezmoi workspace..."
+    mise install cargo
+    cargo install sheldon
+    # curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
+    # | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+
+    # echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+fi 
+{{- end }}

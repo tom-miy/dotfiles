@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# miseのインストール
+if ! command -v mise &> /dev/null; then
+    echo "Installing mise..."
+    
+    # OSに応じたインストール方法の選択
+    if [ "{{ .chezmoi.os }}" = "darwin" ]; then
+        # macOS
+        brew install mise
+    elif [ "{{ .chezmoi.os }}" = "linux" ]; then
+        # Ubuntu/Debian
+        curl https://mise.run | sh
+        ~/.local/bin/mise --version
+        echo "/home/miy/.local/bin/mise activate fish | source" >> ~/.config/fish/config.fish
+    fi
+fi
+
+# # miseの初期設定
+# mise install
+
+# # 必要なツールのインストール
+# mise use node@18
+# mise use python@3.11
+# mise use go@1.24
+# mise use awscli@latest
+
+# # GOPATHの設定
+# echo "Setting up GOPATH..."
+# mkdir -p ~/go/{bin,src,pkg}
+
+# # 現在のディレクトリの設定を表示
+# mise ls
+
+# # インストール済みのバージョン一覧を表示
+# echo "Installed versions:"
+# mise list node
+# mise list python
+# mise list go
+# mise list awscli

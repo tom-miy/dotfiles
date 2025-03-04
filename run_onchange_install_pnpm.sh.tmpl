@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# # pnpmのインストール
+# if ! command -v pnpm &> /dev/null; then
+#     echo "Installing pnpm..."
+    
+#     # Node.jsが必要
+#     if ! command -v node &> /dev/null; then
+#         echo "Node.js is required. Installing via mise..."
+#         mise use node@lts
+#     fi
+
+#     # pnpmのインストール
+#     if [ "{{ .chezmoi.os }}" = "darwin" ]; then
+#         brew install pnpm
+#     else
+#         curl -fsSL https://get.pnpm.io/install.sh | sh -
+#     fi
+# fi
+
+# # pnpmの初期設定
+# pnpm setup
+
+# # シェル設定の追加
+# echo 'export PNPM_HOME="$HOME/.local/share/pnpm"' >> ~/.zshrc
+# echo 'export PATH="$PNPM_HOME:$PATH"' >> ~/.zshrc 

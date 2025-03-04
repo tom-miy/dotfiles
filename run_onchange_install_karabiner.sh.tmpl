@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ "{{ .chezmoi.os }}" = "darwin" ]; then
+    # Karabinerのインストール
+    if ! command -v karabiner-elements &> /dev/null; then
+        echo "Installing Karabiner-Elements..."
+        brew install --cask karabiner-elements
+    fi
+fi 

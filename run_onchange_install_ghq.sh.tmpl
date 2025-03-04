@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# ghqのインストール
+if ! command -v ghq &> /dev/null; then
+    echo "Installing ghq..."
+    
+    # OSに応じたインストール方法の選択
+    if [ "{{ .chezmoi.os }}" = "darwin" ]; then
+        # macOS
+        brew install ghq
+    elif [ "{{ .chezmoi.os }}" = "linux" ]; then
+        # Ubuntu/Debian
+        if command -v apt &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y golang-go
+            go install github.com/x-motemen/ghq@latest
+        # Fedora
+        elif command -v dnf &> /dev/null; then
+            sudo dnf install -y ghq
+        # Arch Linux
+        elif command -v pacman &> /dev/null; then
+            sudo pacman -S ghq
+        else
+            # その他のLinuxディストリビューション用にGoを使用してインストール
+            if ! command -v go &> /dev/null; then
+                echo "Installing Go..."
+                # Goのインストール（必要な場合）
+                sudo apt-get install -y golang-go
+            fi
+            go install github.com/x-motemen/ghq@latest
+        fi
+    fi
+fi
+
+# ghqの設定
+git config --global ghq.root '~/ghq' 

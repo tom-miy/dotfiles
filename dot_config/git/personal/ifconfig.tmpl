@@ -1,0 +1,6 @@
+{{- $data := include "data.toml" | fromToml -}}
+{{- with $data.data }}
+[user]
+    name = "{{ .personal_name }}"
+    email = {{ .personal_githubUser }}@users.noreply.github.com
+{{- end }}

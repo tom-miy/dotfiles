@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# # atuinのインストール
+# if ! command -v atuin &> /dev/null; then
+#     echo "Installing atuin..."
+    
+#     # OSに応じたインストール方法の選択
+#     if [ "{{ .chezmoi.os }}" = "darwin" ]; then
+#         # macOS
+#         brew install atuin
+#     elif [ "{{ .chezmoi.os }}" = "linux" ]; then
+#         # Ubuntu/Debian
+#         if command -v apt &> /dev/null; then
+#             sudo mkdir -p /usr/local/bin
+#             sudo apt-get update
+#             sudo apt-get install -y atuin
+#         # Fedora
+#         elif command -v dnf &> /dev/null; then
+#             sudo dnf install -y atuin
+#         # Arch Linux
+#         elif command -v pacman &> /dev/null; then
+#             sudo pacman -S atuin
+#         else
+#             # その他のLinuxディストリビューション用にバイナリインストール
+#             bash <(curl https://raw.githubusercontent.com/atuinsh/atuin/main/install.sh)
+#         fi
+#     fi
+# fi 

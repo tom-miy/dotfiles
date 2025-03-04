@@ -1,0 +1,9 @@
+[tools]
+node = 'lts'
+python = '3.11'
+go = '1.24'
+rust = 'latest'
+awscli = 'latest'
+
+[settings]
+verbose = false 

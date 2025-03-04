@@ -1,0 +1,27 @@
+
+# sourceDir is the directory that contains the source state
+sourceDir = "{{ .chezmoi.sourceDir }}"
+
+[git]
+    autoCommit = true
+    autoPush = true
+
+[edit]
+    command = "cursor"
+    args = ["--wait"]
+
+[diff]
+    command = "cursor"
+    args = ["--wait", "--diff"]
+
+# 各環境固有の設定
+{{- if eq .chezmoi.os "darwin" }}
+[data.darwin]
+    brewfile = true
+{{- end }}
+
+
+# 外部コマンドの設定
+[cd]
+    command = "cursor"
+    args = ["."]

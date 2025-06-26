@@ -132,6 +132,49 @@ customizationsはcursorの場合もvscodeで大丈夫なはず
     ]
 }
 ```
+
+### Cursor用devcontainer dotfiles設定
+
+Cursorでdevcontainerを使用する場合、以下の設定を `~/.cursor` に追加してdotfilesを自動で同期できます：
+
+#### 1. `~/.cursor/devcontainer.json` にdotfiles設定を追加
+
+```json
+{
+    "dotfiles": {
+        "repository": "tom-miy/dotfiles-devcontainer",
+        "installCommand": "./install.sh"
+    }
+}
+```
+
+#### 2. プロジェクト固有の `.devcontainer/devcontainer.json` 設定
+
+```json
+{
+    "name": "Your Dev Container",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "dotfiles.repository": "tom-miy/dotfiles-devcontainer",
+                "dotfiles.installCommand": "./install.sh"
+            }
+        }
+    }
+}
+```
+
+#### 3. ローカルdotfilesディレクトリを直接マウントする場合
+
+```json
+{
+    "name": "Your Dev Container",
+    "mounts": [
+        "source=${localEnv:HOME}/.local/share/chezmoi,target=/workspaces/.dotfiles,type=bind"
+    ],
+    "postCreateCommand": "cd /workspaces/.dotfiles && ./install.sh"
+}
+```
 ### 参考
 [ghqとSSHの設定で複数のGitアカウントを効率よく管理する方法](https://www.fourier.jp/blog/ghq-ssh-multi-git-account-management?utm_source=pocket_shared)
 [Powerlevel10kのフォント](https://qiita.com/831kirimi/items/582e0abc26dbd7776d9b)

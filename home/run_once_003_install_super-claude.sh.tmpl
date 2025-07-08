@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# 現在のディレクトリを保存
+ORIGINAL_DIR=$(pwd)
+
+mkdir -p $HOME/.local/share
+cd $HOME/.local/share
+git clone https://github.com/NomenAK/SuperClaude.git
+cd SuperClaude/
+
+# Basic installation
+./install.sh --force
+
+# 元のディレクトリに戻る
+cd "$ORIGINAL_DIR"

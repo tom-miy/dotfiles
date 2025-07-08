@@ -1,2 +1,24 @@
 [tools]
 npm = "latest"
+
+# # Python
+# python = "3.11"
+
+# # Go
+# go = "latest"
+
+# Rust
+rust = "latest"
+# CLI tools
+gh = "latest"
+fzf = "latest"
+bat = "latest"
+fd = "latest"
+ripgrep = "latest"
+eza = "latest"
+zoxide = "latest"
+starship = "latest"
+#"cargo:zabrze" = "latest"
+
+# Development tools
+shfmt = "latest"

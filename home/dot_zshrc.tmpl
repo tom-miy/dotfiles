@@ -7,6 +7,13 @@ export PATH="$HOME/.local/bin:$PATH"
 autoload -U compinit
 compinit
 
+if command -v mise >/dev/null 2>&1; then
+    # Trust mise config files silently
+    mise trust ~/.mise.toml 2>/dev/null || true
+    mise trust 2>/dev/null || true
+    eval "$(mise activate zsh)"
+fi
+
 # sheldon (plugin manager)
 if command -v sheldon >/dev/null 2>&1; then
     eval "$(sheldon source)"
@@ -171,6 +178,8 @@ eval "$(mise activate zsh)"
 # Go settings
 export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin" 
+export PATH="$PATH:$HOME/.cargo/bin" 
+export PATH="$PATH:$HOME/.local/share/mise/shims"
 
 # Starship prompt
 if command -v starship >/dev/null 2>&1; then

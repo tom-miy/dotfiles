@@ -7,8 +7,10 @@ export PATH="$HOME/.local/bin:$PATH"
 autoload -U compinit
 compinit
 
-# Load Sheldon plugins
-eval "$(sheldon source)"
+# sheldon (plugin manager)
+if command -v sheldon >/dev/null 2>&1; then
+    eval "$(sheldon source)"
+fi
 
 # Enable Powerlevel10k instant prompt
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -170,7 +172,19 @@ eval "$(mise activate zsh)"
 export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin" 
 
-eval "$(gh completion -s zsh)"
+# Starship prompt
+if command -v starship >/dev/null 2>&1; then
+    eval "$(starship init zsh)"
+fi
+
+# zabrze (abbreviation expansion)
+if command -v zabrze >/dev/null 2>&1; then
+    eval "$(zabrze init --bind-keys)"
+fi
+
+if command -v gh >/dev/null 2>&1; then
+    eval "$(gh completion -s zsh)"
+fi
 
 ghcr() {
   gh repo create "$@"

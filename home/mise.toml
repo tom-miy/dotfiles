@@ -18,7 +18,7 @@ ripgrep = "latest"
 eza = "latest"
 zoxide = "latest"
 starship = "latest"
-#"cargo:zabrze" = "latest"
+"cargo:zabrze" = "latest"
 
 # Development tools
 shfmt = "latest"

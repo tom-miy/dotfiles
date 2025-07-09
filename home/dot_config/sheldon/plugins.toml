@@ -2,8 +2,8 @@ shell = "zsh"
 
 [plugins]
 
-[plugins.zsh-abbr]
-github = "olets/zsh-abbr"
+# [plugins.zsh-abbr]
+# github = "olets/zsh-abbr"
 
 [plugins.zsh-syntax-highlighting]
 github = "zsh-users/zsh-syntax-highlighting"
@@ -11,8 +11,8 @@ github = "zsh-users/zsh-syntax-highlighting"
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
 
-[plugins.powerlevel10k]
-github = "romkatv/powerlevel10k"
+# [plugins.powerlevel10k]
+# github = "romkatv/powerlevel10k"
 
 [plugins.fzf]
 github = "junegunn/fzf"
@@ -27,3 +27,15 @@ github = 'z-shell/F-Sy-H'
 
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions" 
+
+[plugins.z]
+github = "rupa/z" 
+
+[plugins.compinit]
+inline = 'autoload -U compinit && compinit'
+
+[plugins.mise-completion]
+inline = 'eval "$(mise completion zsh)"'
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"

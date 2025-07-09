@@ -3,6 +3,10 @@
 export PATH="$HOME/.local/bin:$PATH"
 {{- end }}
 
+# 補完システムの初期化（必須）
+autoload -U compinit
+compinit
+
 # Load Sheldon plugins
 eval "$(sheldon source)"
 
@@ -11,9 +15,38 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-autoload -Uz compinit
-compinit
+# Completion
+autoload -U compinit && compinit
 zstyle ':completion:*:default' menu select=2
+# 補完候補をメニュー形式で表示
+zstyle ':completion:*' menu select
+
+# 補完候補に説明（ヘルプ）を表示
+zstyle ':completion:*:descriptions' format '%F{yellow}%d%f'
+# 補完候補を頻度順にソート
+zstyle ':completion:*' group-order 'history' 'all-files'
+# 補完候補の色を設定
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# 補完候補のマッチングを大文字小文字を区別しない
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
+# 補完候補のグループ化
+zstyle ':completion:*' group-name ''
+
+# 補完候補の詳細表示
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+# makeコマンドの補完を有効化
+zstyle ':completion:*:*:make:*' tag-order 'targets'
+# ディレクトリの補完を有効化
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+
+# 補完候補が多いときにスクロール
+bindkey '^I' expand-or-complete
+
 # LS_COLORSを設定しておく
 export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
  
@@ -136,3 +169,11 @@ eval "$(mise activate zsh)"
 # Go settings
 export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin" 
+
+eval "$(gh completion -s zsh)"
+
+ghcr() {
+  gh repo create "$@"
+  ghq get "$1"
+  code "$(ghq list --full-path -e "$1")"
+}

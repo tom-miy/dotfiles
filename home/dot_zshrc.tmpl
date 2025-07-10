@@ -20,9 +20,9 @@ if command -v sheldon >/dev/null 2>&1; then
 fi
 
 # Enable Powerlevel10k instant prompt
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
 
 # Completion
 autoload -U compinit && compinit
@@ -73,8 +73,8 @@ export EDITOR=code
 export VISUAL=code
 
 # DevContainer specific abbreviations
-abbr 'dc'='docker-compose'
-abbr 'k'='kubectl'
+# abbr 'dc'='docker-compose'
+# abbr 'k'='kubectl'
 {{- end }}
 
 {{- if env "WSL_DISTRO_NAME" }}
@@ -83,12 +83,12 @@ export BROWSER="wslview"
 export DISPLAY=:0
 export LIBGL_ALWAYS_INDIRECT=1
 
-# WSL specific abbreviations
-abbr 'explorer'='explorer.exe'
-abbr 'code'='code-insiders'
-abbr 'open'='wslview'
-abbr 'pbcopy'='clip.exe'
-abbr 'pbpaste'='powershell.exe -command "Get-Clipboard" | tr -d "\r"'
+# # WSL specific abbreviations
+# abbr 'explorer'='explorer.exe'
+# abbr 'code'='code-insiders'
+# abbr 'open'='wslview'
+# abbr 'pbcopy'='clip.exe'
+# abbr 'pbpaste'='powershell.exe -command "Get-Clipboard" | tr -d "\r"'
 
 # WSL specific functions
 winpath() {
@@ -108,20 +108,20 @@ else
 fi
 
 # macOS specific abbreviations
-abbr 'showfiles'='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
-abbr 'hidefiles'='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
-abbr 'cleanup'='find . -type f -name "*.DS_Store" -ls -delete'
+# abbr 'showfiles'='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
+# abbr 'hidefiles'='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
+# abbr 'cleanup'='find . -type f -name "*.DS_Store" -ls -delete'
 {{- end }}
 
-{{- if eq .chezmoi.os "linux" }}
+# {{- if eq .chezmoi.os "linux" }}
 
 # Ubuntu specific abbreviations
-abbr 'update'='sudo apt update && sudo apt upgrade -y'
-abbr 'install'='sudo apt install -y'
-abbr 'remove'='sudo apt remove'
-abbr 'clean'='sudo apt autoremove && sudo apt autoclean'
+# abbr 'update'='sudo apt update && sudo apt upgrade -y'
+# abbr 'install'='sudo apt install -y'
+# abbr 'remove'='sudo apt remove'
+# abbr 'clean'='sudo apt autoremove && sudo apt autoclean'
 
-{{- end }}
+# {{- end }}
 
 # Common settings
 export EDITOR="cursor"
@@ -130,24 +130,24 @@ export VISUAL="cursor"
 bindkey '^ ' autosuggest-accept
 
 # Load p10k config
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # abbr global settings
 # グローバル設定を追加する場合は、プラグインロード後に設定してください
-abbr_global_flags=(
-    '--global'      # グローバルな略語を作成
-    '--quiet'       # 出力を抑制
-    '--space'       # スペースを自動追加
-)
+# abbr_global_flags=(
+#     '--global'      # グローバルな略語を作成
+#     '--quiet'       # 出力を抑制
+#     '--space'       # スペースを自動追加
+# )
 
-# abbr initialization
-if ! type abbr &>/dev/null; then
-    echo "zsh-abbr plugin not found. Some features may not work."
-fi
- abbr git m='commit -m "%"'
+# # abbr initialization
+# if ! type abbr &>/dev/null; then
+#     echo "zsh-abbr plugin not found. Some features may not work."
+# fi
+#  abbr git m='commit -m "%"'
 
-# Show current dotfiles profile
-abbr 'dots-current'='echo "Current profile: $CHEZMOI_USAGE"'
+# # Show current dotfiles profile
+# abbr 'dots-current'='echo "Current profile: $CHEZMOI_USAGE"'
 
 # ghq + fzf
 function ghq-fzf() {

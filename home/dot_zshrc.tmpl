@@ -1,18 +1,14 @@
 {{- if eq .chezmoi.os "linux" }}
 # Ubuntu specific settings
 export PATH="$HOME/.local/bin:$PATH"
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin" 
+export PATH="$PATH:$HOME/.cargo/bin" 
+export PATH="$PATH:$HOME/.local/share/mise/shims"
+
 {{- end }}
 
 # 補完システムの初期化（必須）
-autoload -U compinit
-compinit
-
-if command -v mise >/dev/null 2>&1; then
-    # Trust mise config files silently
-    mise trust ~/.mise.toml 2>/dev/null || true
-    mise trust 2>/dev/null || true
-    eval "$(mise activate zsh)"
-fi
 
 # sheldon (plugin manager)
 if command -v sheldon >/dev/null 2>&1; then
@@ -25,7 +21,6 @@ fi
 # fi
 
 # Completion
-autoload -U compinit && compinit
 zstyle ':completion:*:default' menu select=2
 # 補完候補をメニュー形式で表示
 zstyle ':completion:*' menu select
@@ -63,8 +58,8 @@ export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # Common abbreviations
-abbr 'll'='ls -la'
-abbr 'g'='git'
+# abbr 'll'='ls -la'
+# abbr 'g'='git'
 
 {{- if env "REMOTE_CONTAINERS" }}
 # DevContainer specific settings
@@ -161,8 +156,6 @@ function ghq-fzf() {
 zle -N ghq-fzf
 bindkey '^g' ghq-fzf
 
-# mise
-eval "$(mise activate zsh)"
 
 # # Atuin設定
 # eval "$(atuin init zsh)"
@@ -175,26 +168,7 @@ eval "$(mise activate zsh)"
 # # atuin login -u username
 # # atuin sync 
 
-# Go settings
-export GOPATH="$HOME/go"
-export PATH="$PATH:$GOPATH/bin" 
-export PATH="$PATH:$HOME/.cargo/bin" 
-export PATH="$PATH:$HOME/.local/share/mise/shims"
-
-# Starship prompt
-if command -v starship >/dev/null 2>&1; then
-    eval "$(starship init zsh)"
-fi
-
-# zabrze (abbreviation expansion)
-if command -v zabrze >/dev/null 2>&1; then
-    eval "$(zabrze init --bind-keys)"
-fi
-
-if command -v gh >/dev/null 2>&1; then
-    eval "$(gh completion -s zsh)"
-fi
-
+# $ ghcr my-super-program --public -d 'The best library ever!'
 ghcr() {
   gh repo create "$@"
   ghq get "$1"

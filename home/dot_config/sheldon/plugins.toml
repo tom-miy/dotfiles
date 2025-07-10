@@ -1,6 +1,21 @@
 shell = "zsh"
 
-[plugins]
+# [plugins]
+
+[plugins.compinit]
+inline = 'autoload -U compinit && compinit && autoload -Uz colors && colors'
+
+[plugins.mise]
+inline = 'eval "$(mise activate zsh)"'
+
+[plugins.starship]
+inline = ' eval "$(starship completions zsh)" && eval "$(starship init zsh)"'
+
+[plugins.zabrze]
+inline = 'eval "$(zabrze init --bind-keys)"'
+
+[plugins.gh]
+inline = 'eval "$(gh completion -s zsh)"'
 
 # [plugins.zsh-abbr]
 # github = "olets/zsh-abbr"
@@ -30,9 +45,6 @@ github = "zsh-users/zsh-completions"
 
 [plugins.z]
 github = "rupa/z" 
-
-[plugins.compinit]
-inline = 'autoload -U compinit && compinit'
 
 [plugins.mise-completion]
 inline = 'eval "$(mise completion zsh)"'

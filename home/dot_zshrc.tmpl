@@ -20,42 +20,60 @@ fi
 #   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 # fi
 
-# Completion
-zstyle ':completion:*:default' menu select=2
-# 補完候補をメニュー形式で表示
-zstyle ':completion:*' menu select
-
-# 補完候補に説明（ヘルプ）を表示
-zstyle ':completion:*:descriptions' format '%F{yellow}%d%f'
-# 補完候補を頻度順にソート
-zstyle ':completion:*' group-order 'history' 'all-files'
-# 補完候補の色を設定
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-
-# 補完候補のマッチングを大文字小文字を区別しない
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-
-# 補完候補のグループ化
-zstyle ':completion:*' group-name ''
-
-# 補完候補の詳細表示
-zstyle ':completion:*:descriptions' format '%B%d%b'
-zstyle ':completion:*:messages' format '%d'
-zstyle ':completion:*:warnings' format 'No matches for: %d'
-# makeコマンドの補完を有効化
-zstyle ':completion:*:*:make:*' tag-order 'targets'
-# ディレクトリの補完を有効化
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' verbose yes
-
-# 補完候補が多いときにスクロール
-bindkey '^I' expand-or-complete
-
 # LS_COLORSを設定しておく
 export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
  
-# ファイル補完候補に色を付ける
+
+# 補完の基本設定
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
+# 補完候補のグループ化
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'
+zstyle ':completion:*:warnings' format '%F{red}No matches found%f'
+
+# プロセス補完の改善
+zstyle ':completion:*:processes' command 'ps -u $USER -o pid,user,comm -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
+
+# ホスト名補完
+zstyle ':completion:*:ssh:*' hosts off
+zstyle ':completion:*:scp:*' hosts off
+
+# fzf-tab 用の設定
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:ls:*' fzf-preview 'exa -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+
+# Git関連の補完改善
+zstyle ':completion:*:git-checkout:*' sort false
+zstyle ':completion:*:git-*:*' group-order heads-local heads-remote branches-local branches-remote
+
+# 大文字小文字を区別しない補完
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# 補完候補の表示順序
+zstyle ':completion:*' file-sort modification
+zstyle ':completion:*' list-dirs-first true
+
+# 不要なファイルを補完候補から除外
+zstyle ':completion:*' ignored-patterns '*.pyc' '*.pyo' '*.bak' '*.swp' '*~'
+
+# zsh-autosuggestions の設定
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=60'
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+
+# 補完候補が多いときにスクロール
+bindkey '^I' expand-or-complete
+# ファイル補完候補に色を付ける
 
 # Common abbreviations
 # abbr 'll'='ls -la'

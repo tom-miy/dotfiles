@@ -52,6 +52,7 @@ inline = 'eval "$(mise completion zsh)"'
 [plugins.fzf-tab]
 github = "Aloxaf/fzf-tab"
 
-[plugins.make-completion]
+[plugins.zsh-completion]
+# https://github.com/zsh-users/zsh-completions/tree/master/src
 github = "zsh-users/zsh-completions"
-use = ["src/_make"]
+use = ["src/_cmake", "src/_npm", "src/_openssl", "src/_setup.py", "src/_uuidd", "src/_uuidgen"]

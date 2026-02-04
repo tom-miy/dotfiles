@@ -16,6 +16,15 @@
 brew install chezmoi
 ```
 
+```bash
+xcode-select --install
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
+```
+
+```bash
+xcode-select --install
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:$GITHUB_USERNAME/dotfiles.git
+```
 #### Ubuntu
 
 ```bash

@@ -59,7 +59,7 @@ fish_style_pwd_dir_length = 10
 format = "[$symbol$branch]($style) "
 symbol = " "
 style = "bold purple"
-truncation_length = 20
+truncation_length = 80
 truncation_symbol = "…"
 
 # Git ステータス

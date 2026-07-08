@@ -1,9 +1,30 @@
 [tools]
 node = 'lts'
-python = '3.11'
-go = '1.24'
+python = 'latest'
+go = 'latest'
 rust = 'latest'
 awscli = 'latest'
+npm = "latest"
 
+# # Python
+# python = "3.11"
+
+# # Go
+# go = "latest"
+
+# Rust
+# CLI tools
+gh = "latest"
+fzf = "latest"
+bat = "latest"
+fd = "latest"
+ripgrep = "latest"
+eza = "latest"
+zoxide = "latest"
+starship = "latest"
+"cargo:zabrze" = "latest"
+
+# Development tools
+shfmt = "latest"
 [settings]
 verbose = false 

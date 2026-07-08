@@ -1,0 +1,62 @@
+# zabrze configuration
+# https://github.com/Ryooooooga/zabrze
+
+[[snippets]]
+name = '>/dev/null 2>&1'
+trigger = 'null'
+snippet = '>/dev/null 2>&1'
+global = true
+
+[[snippets]]
+name = 'git commit'
+trigger = 'c'
+snippet = 'commit'
+global = true
+context = '^git\s'
+
+[[snippets]]
+name = 'git commit -m'
+trigger = 'cm'
+snippet = "commit -m '{}'"
+cursor = "{}" # optional; defaults to "{}"
+global = true
+context = '^git\s'
+
+[[snippets]]
+name = 'branch name'
+trigger = 'B'
+snippet = '$(git symbolic-ref --short HEAD)'
+evaluate = true
+global = true
+context = '^git\s'
+
+# # Git abbreviations
+# g: git
+# gs: git status
+# ga: git add
+# gc: git commit
+# gco: git checkout
+# gp: git push
+# gl: git log --oneline
+# gd: git diff
+# gb: git branch
+# gm: git merged
+
+# # Common commands
+# ll: ls -la
+# la: ls -A
+# l: ls -CF
+
+# # Directory navigation
+# ..: cd ..
+# ...: cd ../..
+# ....: cd ../../..
+
+# # Docker abbreviations
+# d: docker
+# dc: docker compose
+# dps: docker ps
+
+# # Modern CLI tools (if using eza, bat, etc.)
+# cat: bat
+# ls: eza

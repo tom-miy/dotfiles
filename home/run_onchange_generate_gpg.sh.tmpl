@@ -64,10 +64,4 @@ gpg --armor --export {{ .business_email }}
 # キーIDを表示
 echo "Personal GPG Key ID: $personal_key_id"
 echo "Business GPG Key ID: $business_key_id"
-
-# Git設定の更新
-if [ -n "$business_key_id" ]; then
-    git config --global user.signingkey $business_key_id
-    git config --global commit.gpgsign true
-fi
 {{- end }}

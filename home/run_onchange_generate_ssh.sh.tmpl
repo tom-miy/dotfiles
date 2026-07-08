@@ -60,11 +60,51 @@ EOF
     echo "Please add this key to your GitHub account (https://github.com/settings/keys)"
 fi
 
+# 個人用署名SSHキーの生成
+personal_signing_ssh_key="$SSH_DIR/github_personal_signing_ed25519"
+if [ ! -f "$personal_signing_ssh_key" ]; then
+    echo "Generating personal signing SSH key..."
+    ssh-keygen -t ed25519 -C "{{ .personal_email }}" -f "$personal_signing_ssh_key" -N ""
+
+    # 公開鍵の表示
+    echo "Personal signing SSH public key for GitHub:"
+    cat "${personal_signing_ssh_key}.pub"
+    echo "Please add this key as a 'Signing Key' to your GitHub account (https://github.com/settings/keys)"
+fi
+
+# 仕事用署名SSHキーの生成
+business_signing_ssh_key="$SSH_DIR/github_business_signing_ed25519"
+if [ ! -f "$business_signing_ssh_key" ]; then
+    echo "Generating business signing SSH key..."
+    ssh-keygen -t ed25519 -C "{{ .business_email }}" -f "$business_signing_ssh_key" -N ""
+
+    # 公開鍵の表示
+    echo "Business signing SSH public key for GitHub:"
+    cat "${business_signing_ssh_key}.pub"
+    echo "Please add this key as a 'Signing Key' to your GitHub account (https://github.com/settings/keys)"
+fi
+
+# 署名検証用のallowed_signersファイルの作成
+allowed_signers="$SSH_DIR/allowed_signers"
+cat > "$allowed_signers" << EOF
+{{ .personal_email }} $(cat "${personal_signing_ssh_key}.pub")
+{{ .business_email }} $(cat "${business_signing_ssh_key}.pub")
+EOF
+
 # 権限の設定
 chmod 700 "$SSH_DIR"
 chmod 600 "$SSH_DIR/config"
 chmod 600 "$personal_ssh_key" "${personal_ssh_key}.pub"
 chmod 600 "$business_ssh_key" "${business_ssh_key}.pub"
+chmod 600 "$personal_signing_ssh_key" "${personal_signing_ssh_key}.pub"
+chmod 600 "$business_signing_ssh_key" "${business_signing_ssh_key}.pub"
+chmod 600 "$allowed_signers"
+
+# Gitのコミット署名をSSH鍵署名に設定
+git config --global gpg.format ssh
+git config --global gpg.ssh.allowedSignersFile "$allowed_signers"
+git config --global user.signingkey "$business_signing_ssh_key.pub"
+git config --global commit.gpgsign true
 
 # SSHエージェントへの追加
 eval "$(ssh-agent -s)"

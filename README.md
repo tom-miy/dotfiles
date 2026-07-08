@@ -52,6 +52,10 @@ chezmoi apply
 - `.gitconfig` - Gitの設定
 - `Sheldon/plugins.toml` - Zshプラグインの管理
 
+## macOS用ソフトウェア
+
+- [Clipy](https://github.com/Clipy/Clipy) - クリップボード履歴管理ツール(`Brewfile`の`cask "clipy"`でインストールされます)
+
 ## プラットフォーム固有の設定
 
 プラットフォーム固有の設定は `.chezmoi.toml.tmpl` で管理されています。

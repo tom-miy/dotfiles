@@ -67,9 +67,282 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "description": "US配列のかな入力をWindows配列に近づける",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "0" },
+                                "to": [{ "key_code": "0", "modifiers": ["left_shift"] }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "0",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [{ "key_code": "0" }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "hyphen" },
+                                "to": [{ "key_code": "hyphen", "modifiers": ["left_shift"] }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "hyphen",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [{ "key_code": "hyphen" }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "open_bracket" },
+                                "to": [{ "key_code": "open_bracket", "modifiers": ["left_shift"] }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "open_bracket",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [{ "key_code": "open_bracket" }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "close_bracket" },
+                                "to": [{ "key_code": "close_bracket", "modifiers": ["left_shift"] }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "close_bracket",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [{ "key_code": "close_bracket" }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "comma" },
+                                "to": [{ "key_code": "comma", "modifiers": ["left_shift"] }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "comma",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [{ "key_code": "comma" }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "period" },
+                                "to": [{ "key_code": "period", "modifiers": ["left_shift"] }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "period",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [{ "key_code": "period" }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "slash" },
+                                "to": [{ "key_code": "slash", "modifiers": ["left_shift"] }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "slash",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [{ "key_code": "slash" }],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "backslash",
+                                    "modifiers": { "mandatory": ["shift"] }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "osascript -e 'tell application \"System Events\" to keystroke \"？\"'"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^(jp\\.monokakido\\.inputmethod\\.Kawasemi4\\.Japanese|com\\.apple\\.inputmethod\\.Kotoeri\\.KanaTyping\\.Japanese)$",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
         }
     ]
-} 
+}

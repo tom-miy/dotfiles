@@ -1,5 +1,8 @@
-Host business.github.com
+{{- if .business_enabled }}
+Host business-github.com
   HostName github.com
   Port 22
   User git
+  IdentitiesOnly yes
   IdentityFile ~/.ssh/github_business_ed25519
+{{- end }}

@@ -1,0 +1,29 @@
+#!/bin/sh
+#MISE description="Show the active Git identity and signing settings"
+
+set -eu
+
+get_config() {
+    git config --get "$1" 2>/dev/null || printf '%s' '<unset>'
+}
+
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    printf '%s\n' 'Not inside a Git repository.' >&2
+    exit 1
+fi
+
+signing_key=$(get_config user.signingkey)
+case "$signing_key" in
+    *personal*) account=personal ;;
+    *business*) account=business ;;
+    *) account=unknown ;;
+esac
+
+printf 'Account: %s\n' "$account"
+printf 'Name: %s\n' "$(get_config user.name)"
+printf 'Email: %s\n' "$(get_config user.email)"
+printf 'Signing key: %s\n' "$signing_key"
+printf 'Signing format: %s\n' "$(get_config gpg.format)"
+printf 'Sign commits: %s\n' "$(get_config commit.gpgsign)"
+printf 'Remote: %s\n' \
+    "$(git remote get-url origin 2>/dev/null || printf '%s' '<unset>')"

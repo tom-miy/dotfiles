@@ -1,3 +1,17 @@
+{{- $personalName := promptStringOnce . "personal_name" "Personal name" -}}
+{{- $personalEmail := promptStringOnce . "personal_email" "Personal Git email" -}}
+{{- $personalGitHubUser := promptStringOnce . "personal_github_user" "Personal GitHub user" -}}
+{{- $businessEnabled := promptBoolOnce . "business_enabled" "Configure a business Git identity" -}}
+{{- $businessName := "" -}}
+{{- $businessEmail := "" -}}
+{{- $businessGitHubUser := "" -}}
+{{- if $businessEnabled -}}
+{{-   $businessName = promptStringOnce . "business_name" "Business name" -}}
+{{-   $businessEmail = promptStringOnce . "business_email" "Business Git email" -}}
+{{-   $businessGitHubUser = promptStringOnce . "business_github_user" "Business GitHub user" -}}
+{{- end -}}
+{{- $generateSSHKeys := promptBoolOnce . "generate_ssh_keys" "Generate missing SSH keys" -}}
+{{- $signGitCommits := promptBoolOnce . "sign_git_commits" "Sign Git commits with SSH keys" -}}
 
 # sourceDir is the directory that contains the source state
 sourceDir = "{{ .chezmoi.sourceDir }}"
@@ -13,6 +27,17 @@ sourceDir = "{{ .chezmoi.sourceDir }}"
 [diff]
     command = "cursor"
     args = ["--wait", "--diff"]
+
+[data]
+    personal_name = {{ $personalName | quote }}
+    personal_email = {{ $personalEmail | quote }}
+    personal_github_user = {{ $personalGitHubUser | quote }}
+    business_enabled = {{ $businessEnabled }}
+    business_name = {{ $businessName | quote }}
+    business_email = {{ $businessEmail | quote }}
+    business_github_user = {{ $businessGitHubUser | quote }}
+    generate_ssh_keys = {{ $generateSSHKeys }}
+    sign_git_commits = {{ $signGitCommits }}
 
 # 各環境固有の設定
 {{- if eq .chezmoi.os "darwin" }}

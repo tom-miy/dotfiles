@@ -1,0 +1,188 @@
+#!/bin/sh
+#MISE description="Authenticate GitHub and register SSH keys"
+
+set -eu
+
+host=github.com
+
+usage() {
+    printf '%s\n' \
+        'Usage:' \
+        '  mise run github-ssh-keys -- auth ACCOUNT' \
+        '  mise run github-ssh-keys -- register ACCOUNT' \
+        '  mise run github-ssh-keys -- register-auth ACCOUNT' \
+        '  mise run github-ssh-keys -- register-signing ACCOUNT' \
+        '  mise run github-ssh-keys -- list ACCOUNT' \
+        '  mise run github-ssh-keys -- status' \
+        '' \
+        'ACCOUNT: personal{{ if .business_enabled }} or business{{ end }}'
+}
+
+require_gh() {
+    if ! command -v gh >/dev/null 2>&1; then
+        printf '%s\n' 'gh is required. Run mise install first.' >&2
+        exit 1
+    fi
+}
+
+select_account() {
+    account=$1
+
+    case "$account" in
+        personal)
+            github_user={{ .personal_github_user | quote }}
+            auth_key="$HOME/.ssh/github_personal_ed25519.pub"
+            signing_key="$HOME/.ssh/github_personal_signing_ed25519.pub"
+            ;;
+{{- if .business_enabled }}
+        business)
+            github_user={{ .business_github_user | quote }}
+            auth_key="$HOME/.ssh/github_business_ed25519.pub"
+            signing_key="$HOME/.ssh/github_business_signing_ed25519.pub"
+            ;;
+{{- end }}
+        *)
+            printf 'Unknown account: %s\n' "$account" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+}
+
+switch_account() {
+    if ! gh auth switch \
+        --hostname "$host" \
+        --user "$github_user" >/dev/null 2>&1; then
+        printf 'GitHub account is not authenticated: %s\n' \
+            "$github_user" >&2
+        printf 'Run: mise run github-ssh-keys -- auth %s\n' \
+            "$account" >&2
+        exit 1
+    fi
+
+    active_user=$(gh api user --jq .login)
+    if [ "$active_user" != "$github_user" ]; then
+        printf 'Expected GitHub account %s, but active account is %s.\n' \
+            "$github_user" "$active_user" >&2
+        exit 1
+    fi
+}
+
+authenticate() {
+    if gh auth switch \
+        --hostname "$host" \
+        --user "$github_user" >/dev/null 2>&1; then
+        printf 'GitHub account is already authenticated: %s\n' \
+            "$github_user"
+    else
+        printf 'Starting web authentication for: %s\n' "$github_user"
+        gh auth login \
+            --hostname "$host" \
+            --git-protocol ssh \
+            --scopes admin:public_key,admin:ssh_signing_key \
+            --web \
+            --skip-ssh-key
+    fi
+
+    gh auth refresh \
+        --hostname "$host" \
+        --scopes admin:public_key,admin:ssh_signing_key
+
+    active_user=$(gh api user --jq .login)
+    if [ "$active_user" != "$github_user" ]; then
+        printf 'Authenticated as %s, expected %s.\n' \
+            "$active_user" "$github_user" >&2
+        exit 1
+    fi
+
+    printf 'GitHub authentication is ready: %s\n' "$active_user"
+}
+
+require_public_key() {
+    key_path=$1
+
+    if [ ! -f "$key_path" ]; then
+        printf 'Public key does not exist: %s\n' "$key_path" >&2
+        printf '%s\n' 'Run chezmoi apply to generate missing keys.' >&2
+        exit 1
+    fi
+}
+
+register_authentication_key() {
+    require_public_key "$auth_key"
+
+    key_material=$(awk '{print $2}' "$auth_key")
+    if gh api user/keys \
+        --paginate \
+        --jq '.[].key' | grep -Fqx "$key_material"; then
+        printf 'Authentication key is already registered: %s\n' \
+            "$auth_key"
+        return
+    fi
+
+    gh ssh-key add "$auth_key" \
+        --type authentication \
+        --title "$(hostname -s)-$account-auth"
+}
+
+register_signing_key() {
+    require_public_key "$signing_key"
+
+    key_material=$(awk '{print $2}' "$signing_key")
+    if gh api user/ssh_signing_keys \
+        --paginate \
+        --jq '.[].key' | grep -Fqx "$key_material"; then
+        printf 'Signing key is already registered: %s\n' \
+            "$signing_key"
+        return
+    fi
+
+    gh ssh-key add "$signing_key" \
+        --type signing \
+        --title "$(hostname -s)-$account-signing"
+}
+
+require_gh
+
+command_name=${1:-}
+case "$command_name" in
+    status)
+        gh auth status --hostname "$host"
+        ;;
+    auth|register|register-auth|register-signing|list)
+        if [ "$#" -ne 2 ]; then
+            usage >&2
+            exit 2
+        fi
+
+        account=$2
+        select_account "$account"
+
+        case "$command_name" in
+            auth)
+                authenticate
+                ;;
+            register)
+                switch_account
+                register_authentication_key
+                register_signing_key
+                ;;
+            register-auth)
+                switch_account
+                register_authentication_key
+                ;;
+            register-signing)
+                switch_account
+                register_signing_key
+                ;;
+            list)
+                switch_account
+                gh ssh-key list
+                ;;
+        esac
+        ;;
+    *)
+        usage >&2
+        exit 2
+        ;;
+esac

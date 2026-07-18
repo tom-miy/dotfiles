@@ -1,7 +1,6 @@
-{{- $data := include "data.toml" | fromToml -}}
-{{- with $data.data }}
 [user]
-    name = "{{ .personal_name }}"
-    email = {{ .personal_githubUser }}@users.noreply.github.com
+    name = {{ .personal_name | quote }}
+    email = {{ .personal_email | quote }}
+{{- if .sign_git_commits }}
     signingkey = ~/.ssh/github_personal_signing_ed25519.pub
 {{- end }}

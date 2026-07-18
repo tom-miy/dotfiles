@@ -1,0 +1,49 @@
+#!/bin/sh
+#MISE description="Check the Git SSH signing configuration"
+
+set -eu
+
+fail() {
+    printf 'ERROR: %s\n' "$1" >&2
+    exit 1
+}
+
+expand_home_path() {
+    # shellcheck disable=SC2088
+    tilde_prefix='~/'
+    case "$1" in
+        "$tilde_prefix"*)
+            printf '%s/%s' "$HOME" "${1#"$tilde_prefix"}"
+            ;;
+        *)
+            printf '%s' "$1"
+            ;;
+    esac
+}
+
+signing_key=$(git config --get user.signingkey 2>/dev/null) || \
+    fail 'user.signingkey is not configured.'
+public_key=$(expand_home_path "$signing_key")
+
+private_key=${public_key%.pub}
+allowed_signers=$(git config --get \
+    gpg.ssh.allowedSignersFile 2>/dev/null) || \
+    fail 'gpg.ssh.allowedSignersFile is not configured.'
+
+allowed_signers=$(expand_home_path "$allowed_signers")
+
+[ "$(git config --get gpg.format 2>/dev/null)" = ssh ] || \
+    fail 'gpg.format is not ssh.'
+[ "$(git config --get commit.gpgsign 2>/dev/null)" = true ] || \
+    fail 'commit.gpgsign is not true.'
+[ -f "$public_key" ] || fail "Public key is missing: $public_key"
+[ -f "$private_key" ] || fail "Private key is missing: $private_key"
+[ -f "$allowed_signers" ] || \
+    fail "Allowed signers file is missing: $allowed_signers"
+
+key_material=$(awk '{print $2}' "$public_key")
+grep -Fq "$key_material" "$allowed_signers" || \
+    fail 'The signing key is not present in allowed_signers.'
+
+ssh-keygen -lf "$public_key"
+printf '%s\n' 'Git SSH signing configuration is ready.'

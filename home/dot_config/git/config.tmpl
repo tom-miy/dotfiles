@@ -1,0 +1,40 @@
+[core]
+    editor = cursor
+    excludesfile = ~/.config/git/ignore
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+
+[merge]
+    conflictStyle = zdiff3
+
+[init]
+    defaultBranch = main
+
+[ghq]
+    root = ~/ghq/personal
+{{- if .business_enabled }}
+    root = ~/ghq/business
+{{- end }}
+
+[include]
+    path = ~/.config/git/personal/config
+{{- if .business_enabled }}
+[include]
+    path = ~/.config/git/business/config
+{{- end }}
+
+{{- if .sign_git_commits }}
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    allowedSignersFile = ~/.config/git/allowed_signers
+
+[commit]
+    gpgsign = true
+{{- end }}

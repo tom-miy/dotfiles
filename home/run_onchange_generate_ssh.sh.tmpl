@@ -1,128 +1,127 @@
-#!/bin/bash
-{{- $data := include "data.toml" | fromToml -}}
-{{- with $data.data }}
-# dryrunフラグの確認
-if [ "${CHEZMOI_DRY_RUN:-}" = "true" ]; then
-    echo "Dry run mode: No changes will be made"
-fi
+#!/bin/sh
 
-# SSHディレクトリの作成
-SSH_DIR="$HOME/.ssh"
-if [ "${CHEZMOI_DRY_RUN:-}" = "true" ]; then
-    echo "Would create directory: $SSH_DIR"
-else
-    mkdir -p "$SSH_DIR"
-fi
+set -eu
 
-# 個人用SSHキーの生成
-personal_ssh_key="$SSH_DIR/github_personal_ed25519"
-if [ ! -f "$personal_ssh_key" ]; then
-    echo "Would generate personal SSH key: $personal_ssh_key"
-    if [ "${CHEZMOI_DRY_RUN:-}" != "true" ]; then
-        echo "Generating personal SSH key..."
-        ssh-keygen -t ed25519 -C "{{ .personal_email }}" -f "$personal_ssh_key" -N ""
-        
-        # SSH設定ファイルの更新
-        if [ ! -f "$SSH_DIR/config" ]; then
-            touch "$SSH_DIR/config"
-        fi
-        
-        if ! grep -q "Host personal-github.com" "$SSH_DIR/config"; then
-            cat >> "$SSH_DIR/config" << EOF
-Include ~/.ssh/personal_config
-EOF
-        fi
-        
-        # 公開鍵の表示
-        echo "Personal SSH public key for GitHub:"
-        cat "${personal_ssh_key}.pub"
-        echo "Please add this key to your GitHub account (https://github.com/settings/keys)"
-    fi
-fi
-
-# 仕事用SSHキーの生成
-business_ssh_key="$SSH_DIR/github_business_ed25519"
-if [ ! -f "$business_ssh_key" ]; then
-    echo "Generating business SSH key..."
-    ssh-keygen -t ed25519 -C "{{ .business_email }}" -f "$business_ssh_key" -N ""
-    
-    # SSH設定ファイルの更新
-    if ! grep -q "Host business.github.com" "$SSH_DIR/config"; then
-        cat >> "$SSH_DIR/config" << EOF
-
-Include ~/.ssh/business_config
-EOF
-    fi
-    
-    # 公開鍵の表示
-    echo "Business SSH public key for GitHub:"
-    cat "${business_ssh_key}.pub"
-    echo "Please add this key to your GitHub account (https://github.com/settings/keys)"
-fi
-
-# 個人用署名SSHキーの生成
-personal_signing_ssh_key="$SSH_DIR/github_personal_signing_ed25519"
-if [ ! -f "$personal_signing_ssh_key" ]; then
-    echo "Generating personal signing SSH key..."
-    ssh-keygen -t ed25519 -C "{{ .personal_email }}" -f "$personal_signing_ssh_key" -N ""
-
-    # 公開鍵の表示
-    echo "Personal signing SSH public key for GitHub:"
-    cat "${personal_signing_ssh_key}.pub"
-    echo "Please add this key as a 'Signing Key' to your GitHub account (https://github.com/settings/keys)"
-fi
-
-# 仕事用署名SSHキーの生成
-business_signing_ssh_key="$SSH_DIR/github_business_signing_ed25519"
-if [ ! -f "$business_signing_ssh_key" ]; then
-    echo "Generating business signing SSH key..."
-    ssh-keygen -t ed25519 -C "{{ .business_email }}" -f "$business_signing_ssh_key" -N ""
-
-    # 公開鍵の表示
-    echo "Business signing SSH public key for GitHub:"
-    cat "${business_signing_ssh_key}.pub"
-    echo "Please add this key as a 'Signing Key' to your GitHub account (https://github.com/settings/keys)"
-fi
-
-# 署名検証用のallowed_signersファイルの作成
-allowed_signers="$SSH_DIR/allowed_signers"
-cat > "$allowed_signers" << EOF
-{{ .personal_email }} $(cat "${personal_signing_ssh_key}.pub")
-{{ .business_email }} $(cat "${business_signing_ssh_key}.pub")
-EOF
-
-# 権限の設定
-chmod 700 "$SSH_DIR"
-chmod 600 "$SSH_DIR/config"
-chmod 600 "$personal_ssh_key" "${personal_ssh_key}.pub"
-chmod 600 "$business_ssh_key" "${business_ssh_key}.pub"
-chmod 600 "$personal_signing_ssh_key" "${personal_signing_ssh_key}.pub"
-chmod 600 "$business_signing_ssh_key" "${business_signing_ssh_key}.pub"
-chmod 600 "$allowed_signers"
-
-# Gitのコミット署名をSSH鍵署名に設定
-git config --global gpg.format ssh
-git config --global gpg.ssh.allowedSignersFile "$allowed_signers"
-git config --global user.signingkey "$business_signing_ssh_key.pub"
-git config --global commit.gpgsign true
-
-# SSHエージェントへの追加
-eval "$(ssh-agent -s)"
-ssh-add "$personal_ssh_key"
-ssh-add "$business_ssh_key"
-
-# 使用方法の表示
-echo "
-SSH keys have been generated. After adding the public keys to GitHub:
-
-For personal repositories, use:
-git clone git@personal-github.com:username/repo.git
-
-For business repositories, use:
-git clone git@business.github.com:username/repo.git
-
-To test the connection after adding keys to GitHub, run:
-ssh -T git@personal-github.com
-ssh -T git@business.github.com
-" 
+ssh_dir="$HOME/.ssh"
+{{- if .sign_git_commits }}
+allowed_signers="$HOME/.config/git/allowed_signers"
 {{- end }}
+
+{{- if .generate_ssh_keys }}
+personal_auth_key="$ssh_dir/github_personal_ed25519"
+{{- if .business_enabled }}
+business_auth_key="$ssh_dir/github_business_ed25519"
+{{- end }}
+{{- end }}
+{{- if .sign_git_commits }}
+personal_signing_key="$ssh_dir/github_personal_signing_ed25519"
+{{- if .business_enabled }}
+business_signing_key="$ssh_dir/github_business_signing_ed25519"
+{{- end }}
+{{- end }}
+
+is_dry_run() {
+    [ "${CHEZMOI_DRY_RUN:-}" = "true" ]
+}
+
+generate_key() {
+    key_path=$1
+    key_comment=$2
+    key_purpose=$3
+
+    if [ -f "$key_path" ]; then
+        printf '%s key already exists: %s\n' "$key_purpose" "$key_path"
+        return
+    fi
+
+    if is_dry_run; then
+        printf 'Would generate %s key: %s\n' "$key_purpose" "$key_path"
+        return
+    fi
+
+    printf 'Generating %s key: %s\n' "$key_purpose" "$key_path"
+    printf 'ssh-keygen will ask for an optional passphrase.\n'
+    ssh-keygen -t ed25519 -C "$key_comment" -f "$key_path"
+}
+
+{{- if .sign_git_commits }}
+write_allowed_signers() {
+    missing_keys=false
+
+    if [ ! -f "${personal_signing_key}.pub" ]; then
+        printf 'Missing signing public key: %s.pub\n' "$personal_signing_key" >&2
+        missing_keys=true
+    fi
+{{- if .business_enabled }}
+    if [ ! -f "${business_signing_key}.pub" ]; then
+        printf 'Missing signing public key: %s.pub\n' "$business_signing_key" >&2
+        missing_keys=true
+    fi
+{{- end }}
+
+    if [ "$missing_keys" = true ]; then
+        printf 'Skipping allowed_signers generation.\n' >&2
+        return
+    fi
+
+    if is_dry_run; then
+        printf 'Would write allowed signers: %s\n' "$allowed_signers"
+        return
+    fi
+
+    mkdir -p "$(dirname "$allowed_signers")"
+    {
+        printf '%s %s\n' \
+            {{ .personal_email | quote }} \
+            "$(cat "${personal_signing_key}.pub")"
+{{- if .business_enabled }}
+        printf '%s %s\n' \
+            {{ .business_email | quote }} \
+            "$(cat "${business_signing_key}.pub")"
+{{- end }}
+    } > "$allowed_signers"
+    chmod 600 "$allowed_signers"
+}
+{{- end }}
+
+if is_dry_run; then
+    printf 'Would ensure SSH directory exists: %s\n' "$ssh_dir"
+else
+    mkdir -p "$ssh_dir"
+    chmod 700 "$ssh_dir"
+fi
+
+{{- if .generate_ssh_keys }}
+generate_key \
+    "$personal_auth_key" \
+    {{ .personal_email | quote }} \
+    "personal authentication"
+{{- if .sign_git_commits }}
+generate_key \
+    "$personal_signing_key" \
+    {{ .personal_email | quote }} \
+    "personal signing"
+{{- end }}
+
+{{- if .business_enabled }}
+generate_key \
+    "$business_auth_key" \
+    {{ .business_email | quote }} \
+    "business authentication"
+{{- if .sign_git_commits }}
+generate_key \
+    "$business_signing_key" \
+    {{ .business_email | quote }} \
+    "business signing"
+{{- end }}
+{{- end }}
+{{- else }}
+printf 'Automatic SSH key generation is disabled.\n'
+{{- end }}
+
+{{- if .sign_git_commits }}
+write_allowed_signers
+{{- end }}
+
+printf '%s\n' 'SSH key setup completed.'
+printf '%s\n' 'Register authentication and signing public keys with GitHub as needed.'

@@ -1,0 +1,31 @@
+export EDITOR="cursor"
+export VISUAL="cursor"
+
+{{- if eq .chezmoi.os "linux" }}
+export PATH="$HOME/.local/bin:$PATH"
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin"
+export PATH="$PATH:$HOME/.cargo/bin"
+export PATH="$PATH:$HOME/.local/share/mise/shims"
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+if [[ $(uname -m) == "arm64" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+{{- end }}
+
+{{- if env "REMOTE_CONTAINERS" }}
+export SHELL=/usr/bin/zsh
+export EDITOR=code
+export VISUAL=code
+{{- end }}
+
+{{- if env "WSL_DISTRO_NAME" }}
+export BROWSER="wslview"
+export DISPLAY=:0
+export LIBGL_ALWAYS_INDIRECT=1
+export DOCKER_HOST="tcp://localhost:2375"
+{{- end }}

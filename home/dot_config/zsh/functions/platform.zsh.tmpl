@@ -1,0 +1,5 @@
+{{- if env "WSL_DISTRO_NAME" }}
+winpath() {
+    wslpath -w "$1"
+}
+{{- end }}

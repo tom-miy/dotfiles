@@ -1,0 +1,17 @@
+# Zsh configuration loader.
+
+zsh_config_dir=${ZDOTDIR:-$HOME/.config/zsh}
+
+for config_file in "$zsh_config_dir"/conf.d/*.zsh(N); do
+    source "$config_file"
+done
+
+if command -v sheldon >/dev/null 2>&1; then
+    eval "$(sheldon source)"
+fi
+
+for function_file in "$zsh_config_dir"/functions/*.zsh(N); do
+    source "$function_file"
+done
+
+unset config_file function_file zsh_config_dir

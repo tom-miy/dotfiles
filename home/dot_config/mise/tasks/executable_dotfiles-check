@@ -1,0 +1,40 @@
+#!/bin/sh
+#MISE description="Run static checks for the dotfiles source"
+
+set -eu
+
+source_dir=$(chezmoi source-path)
+repository_dir=$(git -C "$source_dir" rev-parse --show-toplevel)
+
+git -C "$repository_dir" diff --check
+zsh -n "$source_dir/dot_config/zsh/dot_zshrc"
+
+find "$source_dir/dot_config/zsh" \
+    -type f -name '*.zsh' -print | \
+while IFS= read -r file; do
+    zsh -n "$file"
+done
+
+find "$source_dir/dot_config/zsh" \
+    -type f -name '*.zsh.tmpl' -print | \
+while IFS= read -r file; do
+    chezmoi execute-template -f "$file" | zsh -n
+done
+
+find "$source_dir" \
+    -maxdepth 1 -type f -name 'run_*.sh.tmpl' -print | \
+while IFS= read -r file; do
+    rendered_script=$(chezmoi execute-template -f "$file")
+    if [ -n "$rendered_script" ]; then
+        printf '%s\n' "$rendered_script" | \
+            shellcheck -e SC2050,SC2317 -
+    fi
+done
+
+mise fmt --check -C "$HOME/.config/mise"
+
+if [ -d "$repository_dir/.github/workflows" ]; then
+    (cd "$repository_dir" && actionlint)
+fi
+
+printf '%s\n' 'Dotfiles source checks completed successfully.'

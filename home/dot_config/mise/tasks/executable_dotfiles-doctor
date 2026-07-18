@@ -1,0 +1,45 @@
+#!/bin/sh
+#MISE description="Diagnose the local dotfiles environment"
+
+set -u
+
+failures=0
+
+check_command() {
+    if command -v "$1" >/dev/null 2>&1; then
+        printf 'OK command: %s\n' "$1"
+    else
+        printf 'MISSING command: %s\n' "$1" >&2
+        failures=$((failures + 1))
+    fi
+}
+
+for command_name in \
+    chezmoi mise git gh zsh sheldon \
+    starship eza fzf rg bat delta shellcheck; do
+    check_command "$command_name"
+done
+
+if ! chezmoi doctor; then
+    failures=$((failures + 1))
+fi
+
+if ! mise doctor; then
+    failures=$((failures + 1))
+fi
+
+if command -v fc-match >/dev/null 2>&1; then
+    printf 'Font: %s\n' "$(fc-match 'HackGen35 Console NF')"
+fi
+
+if git rev-parse --git-dir >/dev/null 2>&1; then
+    mise run git-identity || failures=$((failures + 1))
+fi
+
+if [ "$failures" -ne 0 ]; then
+    printf 'Dotfiles doctor found %s problem(s).\n' \
+        "$failures" >&2
+    exit 1
+fi
+
+printf '%s\n' 'Dotfiles doctor completed successfully.'

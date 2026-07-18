@@ -1,6 +1,6 @@
 #!/bin/bash
 
-{{- if eq .chezmoi.os "darwin" -}}
+{{ if eq .chezmoi.os "darwin" }}
 
 # 一時的に startup を止める
 exit 0
@@ -9,4 +9,4 @@ exit 0
 
 brew bundle --file="$HOME/.Brewfile"
 
-{{- end -}}
+{{ end }}

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -eu
+
+if command -v mise >/dev/null 2>&1; then
+    mise_bin=$(command -v mise)
+else
+    printf '%s\n' 'Installing mise...'
+{{- if eq .chezmoi.os "darwin" }}
+    brew install mise
+    mise_bin=$(command -v mise)
+{{- else if eq .chezmoi.os "linux" }}
+    curl -fsSL https://mise.run | sh
+    mise_bin="$HOME/.local/bin/mise"
+{{- else }}
+    printf '%s\n' \
+        'Automatic mise installation is unsupported on this OS.' >&2
+    exit 1
+{{- end }}
+fi
+
+"$mise_bin" --version
+"$mise_bin" install --yes

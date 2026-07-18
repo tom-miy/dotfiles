@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -eu
+
+{{- if ne .chezmoi.os "darwin" }}
+# Sheldonのインストール
+if command -v sheldon >/dev/null 2>&1; then
+    printf '%s\n' 'Sheldon is already installed.'
+else
+    printf '%s\n' 'Installing Sheldon with Cargo...'
+    mise exec -- cargo install sheldon
+fi
+{{- end }}

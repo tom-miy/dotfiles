@@ -52,6 +52,7 @@ chezmoi apply
 - `~/.config/git/config` - Gitの共通設定
 - `~/.config/mise/config.toml` - 開発ツール
 - `~/.config/sheldon/plugins.toml` - Zshプラグイン
+- `~/.config/karabiner/karabiner.json` - Karabiner-Elements（USキーボードかな入力のWindows配列化）。設計とトラブルシュートは [docs/karabiner.md](docs/karabiner.md) を参照
 
 `~/.zshrc`は次のファイルへの
 シンボリックリンクです。

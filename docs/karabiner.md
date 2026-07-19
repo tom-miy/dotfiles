@@ -127,3 +127,40 @@ for p in d['profiles']:
 # macOSに登録されている入力ソースIDの確認
 defaults read com.apple.HIToolbox AppleSelectedInputSources
 ```
+
+## Parallels・リモートデスクトップでの挙動
+
+Karabiner は物理キーボードのHIDイベントをOSレベルで書き換えるため、Mac上で動くすべてのアプリ（Parallels のVMウィンドウ、RDPクライアント含む）に変換後のキーが届く。発動条件は `input_source_if`（Mac側の入力ソース）なので：
+
+| ケース | 挙動 |
+|---|---|
+| Mac側を英数(ABC)にしてゲスト/リモート側のWindows IMEでかな入力 | **正しく動く（推奨）**。ルール不発動で素のUSキーが届き、Windows IMEがネイティブのWindows配列で変換する |
+| Mac側がかわせみのままVM/リモートへ入力 | **二重変換で化ける**。例: `=` はKarabinerが `\` に変換し、Windows側かな入力では「む」になる。Shift+`\` の？も合成⌘Vの扱いが不安定 |
+| 他マシンからこのMacへ画面共有/VNC接続 | **ルールは効かない**。リモートから注入される合成イベントはKarabinerの物理HID横取りを通らない |
+
+Parallels や RDP クライアントを導入した場合は、全 manipulator に `frontmost_application_unless` を追加すると入力ソースの切り替え忘れ対策になる：
+
+```json
+{ "type": "frontmost_application_unless",
+  "bundle_identifiers": ["^com\\.parallels\\.desktop\\.console$", "^com\\.microsoft\\.rdc\\.macos$"] }
+```
+
+## Linuxでの代替手段
+
+Karabiner相当のキーリマップツール：
+
+| ツール | 特徴 |
+|---|---|
+| [keyd](https://github.com/rvaiya/keyd) | evdev/uinputでOSレベル横取り。INI風設定。シンプルで堅い |
+| [kanata](https://github.com/jtroo/kanata) | Rust製、Linux/Windows/macOS対応。クロスプラットフォームでKarabiner代替になり得る |
+| [xremap](https://github.com/xremap/xremap) | Rust製、アプリごとの条件分岐（`frontmost_application_if` 相当）に対応。YAML設定・コマンド実行可 |
+| [kmonad](https://github.com/kmonad/kmonad) | 高機能・老舗。Lisp風設定 |
+
+shell_command 相当は xremap のコマンド実行＋ `wtype`/`ydotool`（Wayland）や `xdotool`（X11）で再現できる（uinput権限の設定が必要）。
+
+**ただし、かな配列の用途ならIME層で解決するのが正攻法。** macOSでのKarabinerハックは「かわせみ/ことえりのかな配列が固定」なことへの迂回策だが、Linuxでは：
+
+- **Mozc（fcitx5/ibus）** — USかな配列は最小限の調整でJIS配列に近い設計
+- **[ibus-hiragana](https://esrille.github.io/ibus-hiragana/layouts.html)（esrille）** — かな配列そのものをカスタマイズ可能。Windows風USかな配列を直接定義でき、リマップ不要・？も配列に含められる（未確定問題も存在しない）
+
+**WSL2の場合**：キーボードとIMEはWindowsホスト側の管轄なので、Windows標準IMEがネイティブにWindows配列でかな入力する。リマップ自体が不要（必要ならWindows側で PowerToys Keyboard Manager / AutoHotkey / kanata）。

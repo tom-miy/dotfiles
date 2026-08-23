@@ -339,6 +339,98 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "description": "US配列かな入力をWindows標準IME配列に合わせる（Google日本語入力用の差分のみ）",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "open_bracket",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "shift"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "close_bracket",
+                                        "modifiers": [
+                                            "left_shift"
+                                        ]
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^com\\.google\\.inputmethod\\.Japanese",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "close_bracket",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "shift"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "backslash",
+                                        "modifiers": [
+                                            "left_shift"
+                                        ]
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^com\\.google\\.inputmethod\\.Japanese",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "backslash",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "shift"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "LOG=/tmp/kana_debug.log; echo \"$(date +%T) fired\" >> $LOG; osascript -e 'set prevClip to the clipboard' -e 'set the clipboard to \"？\"' -e 'delay 0.15' -e 'tell application \"System Events\" to keystroke \"v\" using command down' -e 'delay 0.2' -e 'set the clipboard to prevClip' >> $LOG 2>&1; echo \"$(date +%T) done rc=$?\" >> $LOG"
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "input_source_id": "^com\\.google\\.inputmethod\\.Japanese",
+                                                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese$"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },

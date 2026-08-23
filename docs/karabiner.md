@@ -1,6 +1,6 @@
 # Karabiner-Elements 設定ガイド
 
-USキーボードで日本語かな入力（かわせみ4）をWindows標準IMEの配列に合わせるための設定と、そのトラブルシュート手順。
+USキーボードで日本語かな入力（かわせみ4・Google日本語入力）をWindows標準IMEの配列に合わせるための設定と、そのトラブルシュート手順。
 
 ## ファイル構成と同期の運用
 
@@ -54,6 +54,28 @@ USキーボードで日本語かな入力（かわせみ4）をWindows標準IME�
 - ことえりかな入力: `com.apple.inputmethod.Kotoeri.KanaTyping.Japanese`
 
 かわせみのメジャーアップデートで ID が変わる可能性がある。実際の ID は **Karabiner-EventViewer → Variables** で確認できる。
+
+### 3. US配列かな入力をWindows標準IME配列に合わせる（Google日本語入力用の差分のみ）
+
+Google 日本語入力（Mozc）のUSかな配列は**JIS配列互換を最優先**する設計で、US物理キーに存在しないキーの文字（ー・む・ろ）だけを移している。結果としてことえり配列よりずっとWindows配列に近く、差分は**記号3キーだけ**。ことえり用ルールとは配列が違うため、別ルールとして独立に定義している。
+
+変換表:
+
+| 押すキー | 出る文字 | 変換先（Mozc上の位置） |
+|---|---|---|
+| Shift+`[` | 「 | Shift+`]` |
+| Shift+`]` | 」 | Shift+`\` |
+| Shift+`\` | ？ | クリップボード貼り付け（かわせみと同じ shell_command） |
+
+**変換しないキー**: `` ` ``（ろ）、Shift+`-`（ー）、`=`（へ）、`[`（゛）、`]`（゜）、`\`（む）は、Mozcが元からWindows配列と同じ位置。かわせみ用ルールをコピーして流用しないこと（二重変換で壊れる）。
+
+Mozc配列の出典: [hiroyuki-komatsu/keyboard_layouts](https://github.com/hiroyuki-komatsu/keyboard_layouts) の `kana_us_highlight.png`（Mozc）と `kana_us_win_highlight.png`（Windows）の比較。
+
+入力ソース条件は以下（ひらがなモードのみ）:
+
+- `input_source_id: ^com\.google\.inputmethod\.Japanese` + `input_mode_id: ^com\.apple\.inputmethod\.Japanese$`
+
+**注意（未検証）**: この ID はこのMacにGoogle日本語入力を未導入の時点で書いた既知の値（ひらがなは通常 `com.google.inputmethod.Japanese.base`）。導入後に Karabiner-EventViewer → Variables で実測して確認すること。また Google 日本語入力側で **環境設定 → 一般 → ローマ字入力・かな入力 を「かな入力」** に切り替えないとかな入力にならない。Shift+`=`（＋）はMozcでの挙動が未確認なので、化けるようなら keypad_plus 変換の追加を検討する。
 
 ### Shift+`\` の「？」だけが特殊な理由
 
